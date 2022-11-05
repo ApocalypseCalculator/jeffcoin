@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const nanoid = import('nanoid');
 const hash = require('../lib/hash');
 
-module.exports.name = "/api/mine/start";
+module.exports.name = "/api/mine/submit";
 module.exports.method = "POST";
 module.exports.verify = function (req, res) {
     return true;
