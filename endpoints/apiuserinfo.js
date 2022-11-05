@@ -18,6 +18,18 @@ module.exports.execute = function (req, res) {
     if (!user) {
         res.status(401).json({ status: 401, error: 'Unauthorized' });
     }
+    else if (req.query.userid && req.query.userid !== user.userid) {
+        prisma.user.findUnique({
+            where: {
+                userid: req.query.userid
+            }
+        }).then(usr => {
+            res.json({
+                username: usr.username,
+                registertime: usr.registertime
+            });
+        })
+    }
     else {
         prisma.user.findUnique({
             where: {
@@ -31,11 +43,11 @@ module.exports.execute = function (req, res) {
                     take: 10
                 }
             }
-        }).then((user) => {
+        }).then((usr) => {
             res.json({
-                wallet: user.wallet,
-                transactionsFrom: user.transactionsFrom,
-                transactionsTo: user.transactionsTo
+                wallet: usr.wallet,
+                transactionsFrom: usr.transactionsFrom,
+                transactionsTo: usr.transactionsTo
             });
         }).catch(err => res.status(500).json({ error: `Internal server error` }));
     }
