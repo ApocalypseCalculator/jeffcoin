@@ -45,7 +45,9 @@ module.exports.execute = function (req, res) {
             }
         }).then((usr) => {
             res.json({
+                username: usr.username,
                 wallet: usr.wallet,
+                registertime: usr.registertime,
                 transactionsFrom: usr.transactionsFrom,
                 transactionsTo: usr.transactionsTo
             });
