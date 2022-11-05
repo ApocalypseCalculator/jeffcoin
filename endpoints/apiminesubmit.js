@@ -6,7 +6,7 @@ const nanoid = require('nanoid');
 const hash = require('../lib/hash');
 
 module.exports.name = "/api/mine/start";
-module.exports.method = "GET";
+module.exports.method = "POST";
 module.exports.verify = function (req, res) {
     return true;
 }
