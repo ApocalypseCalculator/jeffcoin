@@ -1,0 +1,8 @@
+module.exports = {
+    mining: {
+        difficulty: 6 //number of leading 0s required in hash
+    },
+    secrets: {
+        jwt: "JWT secret here"
+    }
+}
