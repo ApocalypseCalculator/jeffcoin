@@ -1,0 +1,42 @@
+datasource db {
+    provider = "sqlite"
+    url      = "file:data.db"
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    userid           String        @id
+    username         String        @unique
+    password         String
+    registertime     Int
+    wallet           Int
+    transactionsFrom Transaction[] @relation("from")
+    transactionsTo   Transaction[] @relation("to")
+}
+
+model Transaction {
+    id         String  @id
+    from       User    @relation("from", fields: [fromid], references: [userid])
+    fromid     String
+    to         User    @relation("to", fields: [fromid], references: [userid])
+    toid       String
+    amount     Int
+    status     Int //0 = success, 1 = mining, 2 = pending, 3 = fail
+    createtime Int
+    block      Block?  @relation(fields: [blockid], references: [blockid])
+    blockid    String?
+}
+
+model Block {
+    blockid      String        @id //included in hash
+    hash         String        @unique //unmined block will have ""
+    prevhash     String //included in hash
+    transactions Transaction[] //included in hash
+    difficulty   Int //number of leading 0s required, included in hash
+    proof        Int //included in hash
+    mined        Boolean //only a max of 1 false value should exist
+    minetime     Int
+}
