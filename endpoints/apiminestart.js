@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const config = require('../config');
 const jwt = require('jsonwebtoken');
-const nanoid = require('nanoid');
+const nanoid = import('nanoid');
 
 module.exports.name = "/api/mine/start";
 module.exports.method = "POST";
