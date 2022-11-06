@@ -37,10 +37,16 @@ module.exports.execute = function (req, res) {
             },
             include: {
                 transactionsFrom: {
-                    take: 10
+                    take: 10,
+                    orderBy: {
+                        createtime: 'desc'
+                    }
                 },
                 transactionsTo: {
-                    take: 10
+                    take: 10,
+                    orderBy: {
+                        createtime: 'desc'
+                    }
                 }
             }
         }).then((usr) => {
