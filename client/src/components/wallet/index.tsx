@@ -2,17 +2,11 @@ import * as React from "react";
 import * as axios from "axios";
 
 import { SessionContext } from "../../util/session";
-import { useNavigate } from "react-router-dom";
 
 import "./index.scss";
 
 export const Wallet = () => {
     const session = React.useContext(SessionContext);
-    const nav = useNavigate();
-
-    if (session.user.loggedin) {
-        nav("/");
-    }
 
     const [userinfo, setUserinfo] = React.useState({
         username: "",
@@ -23,15 +17,17 @@ export const Wallet = () => {
     });
 
     React.useEffect(() => {
-        axios.default.get('/api/user/info', {
-            headers: {
-                "authorization": session.token
-            }
-        }).then((res) => {
-            if (res.data) {
-                setUserinfo(res.data);
-            }
-        });
+        if (session.user.loggedin) {
+            axios.default.get('/api/user/info', {
+                headers: {
+                    "authorization": session.token
+                }
+            }).then((res) => {
+                if (res.data) {
+                    setUserinfo(res.data);
+                }
+            });
+        }
     }, [session.user.loggedin]);
 
     return (
