@@ -3,3 +3,30 @@
     justify-content: center;
     align-items: center;
 }
+
+#myTable {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid rgba(221, 221, 221, 0.13);
+    font-size: 18px;
+    margin-bottom: 100px;
+}
+
+#myTable th,
+#myTable td {
+    text-align: left;
+    padding: 12px;
+}
+
+.breakname {
+    word-break: break-all;
+}
+
+#myTable tr {
+    border-bottom: 1px solid rgba(221, 221, 221, 0.123);
+}
+
+#myTable tr.header,
+#myTable tr:hover {
+    background-color: rgba(221, 221, 221, 0.253);
+}
