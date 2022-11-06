@@ -7,6 +7,6 @@ export default (props: any) => {
         <a className={props.class} href={props.href} onClick={(ev) => {
             ev.preventDefault();
             nav(props.href);
-        }}>{props.text}</a>
+        }}>{props.bold ? <b>{props.text}</b> : props.text}</a>
     )
 }
