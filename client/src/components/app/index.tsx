@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import Link from '../../util/link';
 
+import { Home } from "../home";
+
 export const _App = () => {
     return (
         <div className="page">
@@ -34,6 +36,7 @@ export const _App = () => {
             </nav>
             <div className="page-content">
                 <Routes>
+                    <Route path="/" element={<Home />} />
                 </Routes>
             </div>
         </div>
