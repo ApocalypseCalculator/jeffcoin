@@ -6,6 +6,7 @@ import Link from '../../util/link';
 import { SessionProvider, SessionContext } from "../../util/session";
 
 import { Home } from "../home";
+import { Wallet } from "../wallet";
 import { Login } from "../login";
 import { Register } from "../register";
 
@@ -65,6 +66,7 @@ export const _App = () => {
             <div className="page-content">
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/wallet" element={<Wallet />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                 </Routes>
