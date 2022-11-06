@@ -77,7 +77,7 @@ export const Login = () => {
                                 <button className={"btn btn-lg btn-primary btn-block text-uppercase"} type={"submit"} disabled={logging} onClick={login}>Sign
                                     in</button>
                                 <hr className={"my-4"}></hr>
-                                <p style={{ textAlign: "center" }}>Don't have an account? <Link class="" href="/login" text="Register"></Link> instead</p>
+                                <p style={{ textAlign: "center" }}>Don't have an account? <Link class="" href="/register" text="Register"></Link> instead</p>
                             </form>
                         </div>
                     </div>
