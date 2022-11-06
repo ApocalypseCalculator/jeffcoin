@@ -32,7 +32,7 @@ export const Login = () => {
     function login(e: React.SyntheticEvent) {
         e.preventDefault();
         setLogging(true);
-        axios.default.post('/api/login', {
+        axios.default.post('/api/user/login', {
             username: username,
             password: pwd
         }).then((res) => {

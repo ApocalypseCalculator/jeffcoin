@@ -35,7 +35,7 @@ export const Register = () => {
             setRegistering(false);
         }
         else {
-            axios.default.post('/api/register', {
+            axios.default.post('/api/user/register', {
                 username: username,
                 password: pwd1
             }).then(res => {
