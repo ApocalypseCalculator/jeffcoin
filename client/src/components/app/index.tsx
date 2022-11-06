@@ -7,6 +7,7 @@ import { SessionProvider, SessionContext } from "../../util/session";
 
 import { Home } from "../home";
 import { Login } from "../login";
+import { Register } from "../register";
 
 export const _App = () => {
     const session = React.useContext(SessionContext);
@@ -65,6 +66,7 @@ export const _App = () => {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
                 </Routes>
             </div>
         </div>
