@@ -23,7 +23,7 @@ export const _App = () => {
                 <div className={"collapse navbar-collapse"} id={"navb"}>
                     <ul className={"navbar-nav mr-auto"}>
                         {
-                            session.user.loggedin ?? <>
+                            session.user.loggedin ? <>
                                 <li className={"nav-item"}>
                                     <Link class="nav-link" href="/mining" text="Mine Jeffcoin"></Link>
                                 </li>
@@ -33,7 +33,7 @@ export const _App = () => {
                                 <li className={"nav-item"}>
                                     <Link class="nav-link" href="/wallet" text="Wallet"></Link>
                                 </li>
-                            </>
+                            </> : <></>
                         }
                     </ul>
                     <ul className={"navbar-nav ml-auto"}>
