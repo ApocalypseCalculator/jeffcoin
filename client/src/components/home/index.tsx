@@ -1,12 +1,23 @@
 import * as React from "react";
 
+import { SessionContext } from "../../util/session";
+
 import "./index.scss";
 
 export const Home = () => {
+    const session = React.useContext(SessionContext);
+
     return (
         <div className={"home"}>
-            <div className={"d-flex align-items-center"} id={"home-content"}>
+            <div id={"home-content"}>
                 <h2>JEFF COIN</h2>
+                <p><br></br>{session.user.loggedin ? <>
+                    <button type="button" className="btn btn-primary">Go to Wallet</button>
+                </> : <>
+                    <button type="button" className="btn btn-primary">Register</button>
+                    <button type="button" className="btn btn-primary">Log in</button>
+                </>}</p>
+                <p>I can't make these buttons go down... just like how I don't know how to make &#91;redacted&#93; go down after seeing this background</p>
             </div>
             <div className={"jumbotron text-center"} id={"home-footer"} style={{ marginBottom: 0 }}>
                 <p>Jeff Coin By <a href={"https://github.com/ApocalypseCalculator/jeffcoin"} target={"_blank"} rel={"noreferrer noopener"}>ApocalypseCalculator</a></p>
