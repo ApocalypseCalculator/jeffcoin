@@ -28,7 +28,10 @@ module.exports.execute = function (req, res) {
                 transactions: true
             }
         }).then(block => {
-            if(block) {
+            if (block) {
+                delete block.hash;
+                delete block.mined;
+                delete block.minetime;
                 res.json(block);
             }
             else {
@@ -82,6 +85,9 @@ module.exports.execute = function (req, res) {
                                         transactions: true
                                     }
                                 }).then(newblock => {
+                                    delete newblock.hash;
+                                    delete newblock.mined;
+                                    delete newblock.minetime;
                                     res.json(newblock);
                                 })
                             })
