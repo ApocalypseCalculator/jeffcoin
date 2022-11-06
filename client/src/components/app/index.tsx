@@ -6,6 +6,7 @@ import Link from '../../util/link';
 import { SessionProvider, SessionContext } from "../../util/session";
 
 import { Home } from "../home";
+import { Login } from "../login";
 
 export const _App = () => {
     const session = React.useContext(SessionContext);
@@ -63,6 +64,7 @@ export const _App = () => {
             <div className="page-content">
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
                 </Routes>
             </div>
         </div>
