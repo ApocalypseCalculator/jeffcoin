@@ -5,6 +5,7 @@ import { SessionContext } from "../../util/session";
 
 import "./index.scss";
 import { TransTable } from "../transtable";
+import { TransModal } from "../transmodal";
 
 export const Wallet = () => {
     const session = React.useContext(SessionContext);
@@ -39,7 +40,11 @@ export const Wallet = () => {
                         <h3>Loading...</h3>
                     </> : <>
                         <h3>Your balance is {userinfo.wallet} Jeff coins!</h3>
-                        <h4>Your wallet ID is <b>{session.user.userid}</b></h4>
+                        <h4>Your wallet ID is <b>{session.user.userid}</b></h4><br></br>
+                        <button type={"button"} className={"btn btn-primary"} onClick={(ev) => {
+                            //@ts-ignore
+                            $("#transmodal").modal('show');
+                        }}>Send money</button>
                     </>
                 }
             </div>
@@ -51,6 +56,7 @@ export const Wallet = () => {
                 <p>Your recent received transactions</p>
                 <TransTable transactions={userinfo.transactionsTo} />
             </div>
+            <TransModal />
         </div>
     )
 }
