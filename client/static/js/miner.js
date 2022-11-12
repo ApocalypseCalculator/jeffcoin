@@ -17,7 +17,7 @@ onmessage = async (e) => {
             let hash = await crypto.subtle.digest("SHA-256", encoder.encode(jsonstring));
             let hashhex = Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
             if (hashhex.startsWith("0".repeat(blockdata.difficulty))) {
-                postMessage(["proof", blockdata.proof]);
+                postMessage(["proof", blockdata.proof, blockdata.blockid]);
                 postMessage(["log", `Mining done for ${blockdata.blockid} with proof ${blockdata.proof}. Waiting on new job`]);
                 start = false;
                 break;
