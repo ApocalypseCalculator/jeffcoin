@@ -109,7 +109,7 @@ function GenerateTable(props: any) {
                 <td>{new Date(trans.createtime).toLocaleString()}</td>
                 <td>
                     {
-                        trans.status > 1 ? "-" : <Link class="breakname" href={`/block?id=${trans.blockid}`} text={trans.blockid} />
+                        trans.status > 1 ? "-" : <Link class="breakname" href={`/block?blockid=${trans.blockid}`} text={trans.blockid} />
                     }
                 </td>
             </tr>
