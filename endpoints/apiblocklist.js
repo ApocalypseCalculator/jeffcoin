@@ -20,7 +20,7 @@ module.exports.execute = function (req, res) {
     }
     else {
         prisma.block.findMany({
-            skip: req.query.offset ?? 0,
+            skip: req.query.page ? (req.query.page - 1) * 10 : 0,
             take: 10,
             orderBy: {
                 minetime: 'desc'
