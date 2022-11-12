@@ -53,45 +53,41 @@ export const Blocks = () => {
                         <h3>Loading...</h3>
                     </> : <>
                         {
-                            blocks.length == 0 ? <>
-                                <h3>No blocks to show. </h3>
-                            </> : <>
-                                <div className={"container"}>
-                                    <p>Block List - Page {page}</p>
-                                    <nav aria-label="Page navigation example">
-                                        <ul className="pagination">
-                                            <li className={`page-item ${page <= 1 ? "disabled" : ""}`}><a className="page-link" href={`/blocks?page=${page - 1}`} onClick={(ev) => {
-                                                ev.preventDefault();
-                                                if (page > 1) {
-                                                    nav(`/blocks?page=${page - 1}`);
-                                                    setPage((pageval) => {
-                                                        return pageval - 1;
-                                                    })
-                                                }
-                                            }}>Previous</a></li>
-                                            <li className="page-item"><a className="page-link" href={`/blocks?page=${page + 1}`} onClick={(ev) => {
-                                                ev.preventDefault();
-                                                nav(`/blocks?page=${page + 1}`);
+                            <div className={"container"}>
+                                <p>Block List - Page {page}</p>
+                                <nav aria-label="Page navigation example">
+                                    <ul className="pagination">
+                                        <li className={`page-item ${page <= 1 ? "disabled" : ""}`}><a className="page-link" href={`/blocks?page=${page - 1}`} onClick={(ev) => {
+                                            ev.preventDefault();
+                                            if (page > 1) {
+                                                nav(`/blocks?page=${page - 1}`);
                                                 setPage((pageval) => {
-                                                    return pageval + 1;
+                                                    return pageval - 1;
                                                 })
-                                            }}>Next</a></li>
-                                        </ul>
-                                    </nav>
-                                    <div className={"container"}>
-                                        <table id={"myTable"}>
-                                            <tr className={"header"}>
-                                                <th>ID</th>
-                                                <th>Hash</th>
-                                                <th>Difficulty</th>
-                                                <th>Date Mined</th>
-                                                <th>Transactions</th>
-                                            </tr>
-                                            <GenerateTable blocks={blocks} />
-                                        </table>
-                                    </div>
+                                            }
+                                        }}>Previous</a></li>
+                                        <li className="page-item"><a className="page-link" href={`/blocks?page=${page + 1}`} onClick={(ev) => {
+                                            ev.preventDefault();
+                                            nav(`/blocks?page=${page + 1}`);
+                                            setPage((pageval) => {
+                                                return pageval + 1;
+                                            })
+                                        }}>Next</a></li>
+                                    </ul>
+                                </nav>
+                                <div className={"container"}>
+                                    <table className={"nicetable"}>
+                                        <tr className={"header"}>
+                                            <th>ID</th>
+                                            <th>Hash</th>
+                                            <th>Difficulty</th>
+                                            <th>Date Mined</th>
+                                            <th>Transactions</th>
+                                        </tr>
+                                        <GenerateTable blocks={blocks} />
+                                    </table>
                                 </div>
-                            </>
+                            </div>
                         }
                     </>
                 }

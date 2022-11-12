@@ -1,9 +1,11 @@
 import * as React from "react";
 import Link from "../../util/link";
 
+import "./index.scss";
+
 export const TransTable = (props: any) => {
     return (<div className={"container"}>
-        <table id={"myTable"}>
+        <table className={"nicetable"}>
             <tr className={"header"}>
                 <th>ID</th>
                 <th>From</th>
