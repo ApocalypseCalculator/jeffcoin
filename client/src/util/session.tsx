@@ -11,7 +11,8 @@ export interface User {
 export interface Session {
     user: User,
     token: string,
-    updateToken: (token: string) => void
+    updateToken: (token: string) => void,
+    miner: any
 }
 
 export const SessionContext = React.createContext<Session>({
@@ -22,11 +23,13 @@ export const SessionContext = React.createContext<Session>({
         registertime: 0
     },
     token: "",
-    updateToken: (token: string) => { }
+    updateToken: (token: string) => { },
+    miner: {}
 });
 
 export const SessionProvider = (props: { children: React.ReactNode }) => {
     let [token, setToken] = React.useState("");
+    let [miner, setMiner] = React.useState({});
     let [user, setUser] = React.useState({
         loggedin: false,
         username: "",
@@ -59,9 +62,10 @@ export const SessionProvider = (props: { children: React.ReactNode }) => {
         if (storagetoken) {
             updateToken(storagetoken);
         }
+        setMiner(new Worker('/static/js/miner.js'));
     }, []);
     return (
-        <SessionContext.Provider value={{ user, token, updateToken }}>
+        <SessionContext.Provider value={{ user, token, updateToken, miner }}>
             {props.children}
         </SessionContext.Provider>
     )
