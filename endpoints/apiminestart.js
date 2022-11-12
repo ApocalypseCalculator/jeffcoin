@@ -52,7 +52,7 @@ module.exports.execute = function (req, res) {
                             difficulty: config.mining.difficulty,
                             proof: 0,
                             mined: false,
-                            minetime: -1
+                            minetime: 2e14
                         }
                     }).then(() => {
                         prisma.transaction.findMany({
