@@ -3,13 +3,14 @@ import * as axios from "axios";
 
 import { SessionContext } from "../../util/session";
 
-import "./index.scss";
 import Link from "../../util/link";
 
 export const Block = () => {
     const session = React.useContext(SessionContext);
 
-    const [block, setBlock] = React.useState({} as any);
+    const [block, setBlock] = React.useState({
+        transactions: []
+    } as any);
 
     React.useEffect(() => {
         if (session.user.loggedin) {
@@ -54,7 +55,7 @@ export const Block = () => {
                                     <tr>
                                         <th scope="row">Hash</th>
                                         <td>
-                                            {block.mined ? "Unknown" : block.hash}
+                                            {!block.mined ? "Unknown" : block.hash}
                                         </td>
                                     </tr>
                                     <tr>
@@ -67,11 +68,11 @@ export const Block = () => {
                                     </tr>
                                     <tr>
                                         <th scope="row">Proof</th>
-                                        <td>{block.mined ? "Unknown" : block.prevhash}</td>
+                                        <td>{!block.mined ? "Unknown" : block.prevhash}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Date Mined</th>
-                                        <td>{block.mined ? "Unknown" : new Date(block.minetime).toLocaleString()}</td>
+                                        <td>{!block.mined ? "Unknown" : new Date(block.minetime).toLocaleString()}</td>
                                     </tr>
                                 </tbody>
                             </table>
