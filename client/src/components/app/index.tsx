@@ -9,6 +9,7 @@ import { Home } from "../home";
 import { Wallet } from "../wallet";
 import { Block } from "../block";
 import { Mining } from "../mining";
+import { Transactions } from "../transactions";
 import { Login } from "../login";
 import { Register } from "../register";
 
@@ -71,6 +72,7 @@ export const _App = () => {
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/block" element={<Block />} />
                     <Route path="/mining" element={<Mining />} />
+                    <Route path="/transactions" element={<Transactions />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                 </Routes>
