@@ -4,7 +4,7 @@ import * as axios from "axios";
 import { SessionContext } from "../../util/session";
 
 import "./index.scss";
-import { TransTable } from "../transtable/transtable";
+import { TransTable } from "../transtable";
 
 export const Wallet = () => {
     const session = React.useContext(SessionContext);
