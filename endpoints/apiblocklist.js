@@ -24,6 +24,11 @@ module.exports.execute = function (req, res) {
             take: 10,
             orderBy: {
                 minetime: 'desc'
+            },
+            include: {
+                _count: {
+                    select: { transactions: true }
+                }
             }
         }).then(result => {
             res.json(result);
