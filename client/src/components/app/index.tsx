@@ -32,6 +32,9 @@ export const _App = () => {
                                     <Link class="nav-link" href="/mining" text="Mine Jeffcoin"></Link>
                                 </li>
                                 <li className={"nav-item"}>
+                                    <Link class="nav-link" href="/blocks" text="Blocks"></Link>
+                                </li>
+                                <li className={"nav-item"}>
                                     <Link class="nav-link" href="/transactions" text="Transactions"></Link>
                                 </li>
                                 <li className={"nav-item"}>
