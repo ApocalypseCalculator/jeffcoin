@@ -105,7 +105,7 @@ function GenerateTable(props: any) {
                 <td className="breakname">{block.difficulty}</td>
                 <td className="breakname">{block.mined ? new Date(block.minetime).toLocaleString() : ""}</td>
                 <td className="breakname">{
-                    block.transactions
+                    block._count.transactions
                 }</td>
             </tr>
         </>);
