@@ -100,7 +100,7 @@ function GenerateTable(props: any) {
         return (<>
             <tr>
                 <td className="breakname">{trans.id}</td>
-                <td className="breakname">{trans.fromid}</td>
+                <td className="breakname">{(trans.fromid === "0") ? "Mining Rewards" : trans.fromid}</td>
                 <td className="breakname">{trans.toid}</td>
                 <td className="breakname">{trans.amount}</td>
                 <td className="breakname">{
