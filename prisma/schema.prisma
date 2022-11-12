@@ -21,7 +21,7 @@ model Transaction {
     id         String  @id
     from       User    @relation("from", fields: [fromid], references: [userid])
     fromid     String
-    to         User    @relation("to", fields: [fromid], references: [userid])
+    to         User    @relation("to", fields: [toid], references: [userid])
     toid       String
     amount     Int
     status     Int //0 = success, 1 = mining, 2 = pending, 3 = fail
