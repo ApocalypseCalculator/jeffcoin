@@ -1,12 +1,16 @@
 import * as React from "react";
 import * as axios from "axios";
 
+import { useSearchParams } from "react-router-dom";
+
 import { SessionContext } from "../../util/session";
 
 import { TransTable } from "../transtable";
+import Link from "../../util/link";
 
 export const Block = () => {
     const session = React.useContext(SessionContext);
+    let [searchParams, setSearchParams] = useSearchParams();
 
     const [block, setBlock] = React.useState({
         transactions: []
@@ -34,7 +38,7 @@ export const Block = () => {
                 }
             });
         }
-    }, [session.user.loggedin]);
+    }, [session.user.loggedin, searchParams]);
 
     return (
         <div className={"block"}>
@@ -60,7 +64,7 @@ export const Block = () => {
                                     </tr>
                                     <tr>
                                         <th scope="row">Last Block Hash</th>
-                                        <td>{block.prevhash}</td>
+                                        <td><Link class="" href={`/block?hash=${block.prevhash}`} text={block.prevhash} /></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Difficulty</th>
