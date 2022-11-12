@@ -8,6 +8,7 @@ import { SessionProvider, SessionContext } from "../../util/session";
 import { Home } from "../home";
 import { Wallet } from "../wallet";
 import { Block } from "../block";
+import { Blocks } from "../blocks";
 import { Mining } from "../mining";
 import { Transactions } from "../transactions";
 import { Login } from "../login";
@@ -71,6 +72,7 @@ export const _App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/block" element={<Block />} />
+                    <Route path="/blocks" element={<Blocks />} />
                     <Route path="/mining" element={<Mining />} />
                     <Route path="/transactions" element={<Transactions />} />
                     <Route path="/login" element={<Login />} />
