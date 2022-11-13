@@ -80,6 +80,11 @@ export const _App = () => {
                     <Route path="/transactions" element={<Transactions />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="*" element={<>
+                        <div className="container pagecenter">
+                            <h1>Oops...</h1><br /><h4>We couldn't find what you were looking for</h4>
+                        </div>
+                    </>}></Route>
                 </Routes>
             </div>
         </div>
