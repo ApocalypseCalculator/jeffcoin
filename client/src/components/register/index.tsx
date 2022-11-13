@@ -8,7 +8,7 @@ export const Register = () => {
     const nav = useNavigate();
     const session = React.useContext(SessionContext);
 
-    if(session.user.loggedin) {
+    if (session.user.loggedin) {
         nav("/");
     }
 
@@ -57,8 +57,8 @@ export const Register = () => {
         <div className={"register"}>
             <div className={"jumbotron jumbotron-fluid"}>
                 <div className={"container"}>
-                    <h1>Feck Files</h1>
-                    <p>Register for an account to upload private files</p>
+                    <h1>Jeff Coin</h1>
+                    <p>Register an account to mine and trade Jeff Coin!</p>
                 </div>
             </div>
             <div className={"container"}>
