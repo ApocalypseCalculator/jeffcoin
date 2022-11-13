@@ -1,5 +1,6 @@
 import * as React from 'react';
 import jwt_decode from "jwt-decode";
+import * as axios from "axios";
 
 export interface User {
     loggedin: boolean,
@@ -60,7 +61,15 @@ export const SessionProvider = (props: { children: React.ReactNode }) => {
     React.useEffect(() => {
         let storagetoken = localStorage.getItem("token");
         if (storagetoken) {
-            updateToken(storagetoken);
+            axios.default.get(`/api/ping`, {
+                headers: {
+                    "authorization": storagetoken
+                }
+            }).then((res) => {
+                updateToken(storagetoken as string);
+            }).catch(() => {
+                localStorage.removeItem("token");
+            })
         }
         setMiner(new Worker('/static/js/miner.js'));
     }, []);
