@@ -34,7 +34,8 @@ export const Wallet = () => {
 
     return (
         <div className={"wallet"}>
-            <div id={"wallet-content"}>
+            <img className="imgcenter" src={"/static/images/coin.png"}></img>
+            <div className={"wallet-content container"}>
                 {
                     userinfo.wallet == -1 ? <>
                         <h3>Loading...</h3>

@@ -112,6 +112,7 @@ export const Mining = () => {
             <div id={"mining-content"}>
                 {
                     ready ? <div className={"container"}>
+                        <img className="imgcenter" src={"/static/images/minejeffcoin.png"}></img>
                         <button className="btn btn-primary" type="button" onClick={() => {
                             setStarted(!started);
                         }}>
