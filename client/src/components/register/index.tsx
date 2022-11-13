@@ -26,8 +26,8 @@ export const Register = () => {
             setErr("Username can only contain alphanumeric characters or underscore and must be at most 32 characters");
             setRegistering(false);
         }
-        else if (!/^\w+$/.test(pwd1) || pwd1.length < 8) {
-            setErr("Password can only contain alphanumeric characters or underscore and must be at least 8 characters");
+        else if (pwd1.length < 8) {
+            setErr("Password must be at least 8 characters");
             setRegistering(false);
         }
         else if (pwd1 !== pwd2) {
