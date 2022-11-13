@@ -13,8 +13,9 @@ export const Home = () => {
         "Hey @everyone! Have a paw-ssion for feet?",
         "I love Chick-fil-A",
         "Wait guys... How do I do dot product and cross product again???",
-        "You are a darker shade"
-    ][Math.floor(Math.random() * 4)];
+        "You are a darker shade",
+        "low d high minus high d low, square the bottom and here you go"
+    ][Math.floor(Math.random() * 5)];
 
     return (
         <div className={"home"}>
