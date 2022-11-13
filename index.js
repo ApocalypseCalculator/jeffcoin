@@ -1,9 +1,9 @@
 const express = require("express");
 const fs = require('fs');
 const path = require('path');
+const config = require('./config');
 
 const app = express();
-const PORT = 8080;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ strict: true }));
@@ -42,6 +42,6 @@ app.use('/', function (req, res) {
     res.sendFile(path.join(__dirname + `/client/dist/index.html`));
 })
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(config.server.port, () => {
+    console.log(`Server listening on port ${config.server.port}`);
 });
