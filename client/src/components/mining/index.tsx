@@ -135,7 +135,7 @@ export const Mining = () => {
                 }
             });
         }
-    }, 20 * 1000); //check every minute
+    }, 60 * 1000); //check every minute
 
     React.useEffect(() => {
         if (started && ready && block.blockid !== "") {
