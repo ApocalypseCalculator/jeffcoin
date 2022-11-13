@@ -14,7 +14,7 @@ export const Mining = () => {
     const [block, setBlock] = React.useState({} as any);
 
     function getBlock() {
-        return new Promise((resolve) => {
+        return new Promise<any>((resolve) => {
             if (session.user.loggedin) {
                 axios.default.post('/api/mine/start', {}, {
                     headers: {
@@ -22,13 +22,9 @@ export const Mining = () => {
                     }
                 }).then((res) => {
                     if (res.data.blockid) {
-                        setBlock(res.data);
-                        session.miner.postMessage(['data', res.data]);
-                        console.log(`Sending data to worker thread for block ID: ${res.data.blockid}`);
-                        if (!ready) setReady(true);
-                        resolve(true);
+                        resolve(res.data);
                     }
-                });
+                })
             }
         })
     }
@@ -51,7 +47,9 @@ export const Mining = () => {
                     else {
                         reject();
                     }
-                });
+                }).catch(err => {
+                    resolve("Mining submission failed, perhaps a competitor mined the block first. Fetching new block...");
+                })
             }
             else {
                 reject();
@@ -61,7 +59,14 @@ export const Mining = () => {
 
     React.useEffect(() => {
         if (session.miner instanceof Worker && session.user.loggedin) {
-            getBlock();
+            getBlock().then(data => {
+                setBlock(data);
+                session.miner.postMessage(['data', data]);
+                setLog((prevlog) => {
+                    return `Sending data to worker thread for block ID: ${data.blockid}\n${prevlog}`;
+                });
+                if (!ready) setReady(true);
+            });
             session.miner.onmessage = (ev) => {
                 if (ev.data[0] == "log") {
                     setLog((prevlog) => {
@@ -73,16 +78,32 @@ export const Mining = () => {
                         setLog((prevlog) => {
                             return `${msg}\n${prevlog}`;
                         });
-                        getBlock().then(() => {
+                        getBlock().then((data) => {
+                            setBlock(data);
+                            session.miner.postMessage(['data', data]);
+                            setLog((prevlog) => {
+                                return `Sending data to worker thread for block ID: ${data.blockid}\n${prevlog}`;
+                            });
                             session.miner.postMessage(["start"]);
                             setLog((prevlog) => {
-                                return `Dispatched mining job to worker thread for block ID: ${block.blockid}\n${prevlog}`;
+                                return `Dispatched mining job to worker thread for block ID: ${data.blockid}\n${prevlog}`;
                             });
                         })
                     }).catch(() => {
                         setLog((prevlog) => {
                             return `Error on proof submission\n${prevlog}`;
                         });
+                        getBlock().then((data) => {
+                            setBlock(data);
+                            session.miner.postMessage(['data', data]);
+                            setLog((prevlog) => {
+                                return `Sending data to worker thread for block ID: ${data.blockid}\n${prevlog}`;
+                            });
+                            session.miner.postMessage(["start"]);
+                            setLog((prevlog) => {
+                                return `Dispatched mining job to worker thread for block ID: ${data.blockid}\n${prevlog}`;
+                            });
+                        })
                     })
                 }
             }
@@ -90,7 +111,31 @@ export const Mining = () => {
                 session.miner.onmessage = () => { };
             }
         }
-    }, [session.miner, session.user.loggedin])
+    }, [session.miner, session.user.loggedin]);
+
+    useInterval(() => {
+        if (!started && ready && block.blockid) {
+            getBlock().then((data) => {
+                console.log(data.blockid);
+                console.log(block.blockid);
+                if (data.blockid !== block.blockid) {
+                    session.miner.postMessage(["stop"]);
+                    setLog((prevlog) => {
+                        return `Received new block. Aborting mining job with block ID: ${block.blockid}\n${prevlog}`;
+                    });
+                    setBlock(data);
+                    session.miner.postMessage(['data', data]);
+                    setLog((prevlog) => {
+                        return `Sending new data to worker thread for block ID: ${data.blockid}\n${prevlog}`;
+                    });
+                    session.miner.postMessage(["start"]);
+                    setLog((prevlog) => {
+                        return `Dispatched mining job to worker thread for block ID: ${data.blockid}\n${prevlog}`;
+                    });
+                }
+            });
+        }
+    }, 20 * 1000); //check every minute
 
     React.useEffect(() => {
         if (started && ready && block.blockid !== "") {
@@ -128,4 +173,25 @@ export const Mining = () => {
             </div>
         </div>
     )
+}
+
+function useInterval(callback: any, delay: number) {
+    const savedCallback = React.useRef();
+
+    // Remember the latest callback.
+    React.useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    // Set up the interval.
+    React.useEffect(() => {
+        function tick() {
+            // @ts-ignore
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            let id = setInterval(tick, delay);
+            return () => clearInterval(id);
+        }
+    }, [delay]);
 }
