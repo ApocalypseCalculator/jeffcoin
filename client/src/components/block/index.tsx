@@ -72,7 +72,7 @@ export const Block = () => {
                                     </tr>
                                     <tr>
                                         <th scope="row">Proof</th>
-                                        <td>{!block.mined ? "Unknown" : block.prevhash}</td>
+                                        <td>{!block.mined ? "Unknown" : block.proof}</td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Date Mined</th>
