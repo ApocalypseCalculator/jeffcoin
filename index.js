@@ -3,11 +3,20 @@ const fs = require('fs');
 const path = require('path');
 const config = require('./config');
 
+process.env.NODE_ENV = "production";
+
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({ strict: true }));
 app.enable('trust proxy');
+
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).send({ status: 400, message: err.message });
+    }
+    next();
+});
 
 var endpoints = {};
 fs.readdirSync("./endpoints/").forEach(function (file) {
