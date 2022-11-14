@@ -81,31 +81,36 @@ export const Casino = () => {
 }
 
 function GuessTable(props: any) {
-    let optionscol = Array.from(Array(8).keys());
-    let optionsrow = Array.from(Array(10).keys());
+    let optionscol = [0, 1, 2, 3, 4, 5, 6, 7];
+    let optionsrow = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const [selected, setSelected] = React.useState(new Map());
     return (
         <table className="kenotable">
             {
                 optionscol.map((rowval) => {
-                    <tr className="kenotablerow" key={rowval}>
-                        {
-                            optionsrow.map((colval) => {
-                                <td className={`centertext kenobtn${selected.has(rowval * 10 + colval + 1) ? " selected" : ""}`} key={rowval * 10 + colval + 1} onClick={() => {
-                                    setSelected((sel) => {
-                                        if (sel.size >= 10) {
-                                            return sel;
-                                        }
-                                        else {
-                                            return sel.set(rowval * 10 + colval + 1, true);
-                                        }
-                                    })
-                                }}>
-                                    {rowval * 10 + colval + 1}
-                                </td>
-                            })
-                        }
-                    </tr>
+                    return (
+                        <tr className="kenotablerow" key={rowval}>
+                            {
+                                optionsrow.map((colval) => {
+                                    return (
+                                        <td className={`centertext kenobtn${selected.has(rowval * 10 + colval) ? " selected" : ""}`} key={rowval * 10 + colval} onClick={() => {
+                                            setSelected((sel) => {
+                                                if (sel.size >= 10 || sel.has(rowval * 10 + colval)) {
+                                                    return sel;
+                                                }
+                                                else {
+                                                    console.log(rowval * 10 + colval);
+                                                    return sel.set(rowval * 10 + colval, true);
+                                                }
+                                            })
+                                        }}>
+                                            {rowval * 10 + colval}
+                                        </td>
+                                    )
+                                })
+                            }
+                        </tr>
+                    )
                 })
             }
         </table>
