@@ -14,7 +14,7 @@ prisma.$transaction([
     }),
     prisma.user.create({
         data: {
-            userid: 'Keno Rewards',
+            userid: '1',
             username: 'admin2',
             password: '0',
             registertime: 0,
@@ -32,4 +32,6 @@ prisma.$transaction([
             minetime: 0
         }
     })
-])
+]).then(() => {
+    console.log('Done!');
+})
