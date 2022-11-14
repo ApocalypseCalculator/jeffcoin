@@ -15,6 +15,7 @@ model User {
     wallet           Int
     transactionsFrom Transaction[] @relation("from")
     transactionsTo   Transaction[] @relation("to")
+    bets             Bet[]
 }
 
 model Transaction {
@@ -39,4 +40,13 @@ model Block {
     proof        Int //included in hash
     mined        Boolean //only a max of 1 false value should exist
     minetime     Int
+}
+
+model Bet {
+    betid   String @id
+    chosen  String //JSON :monke:
+    winning String //also JSON :monke:
+    payout  Int
+    userid  String
+    user    User   @relation(fields: [userid], references: [userid])
 }
