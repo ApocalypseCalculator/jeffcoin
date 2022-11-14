@@ -120,7 +120,7 @@ module.exports.execute = function (req, res) {
 
 function rng10() { //generate 10 unique numbers, no params to prevent potential fuckery
     let resultmap = new Map();
-    while (resultmap.size < n) {
+    while (resultmap.size < 10) {
         let rnd = crypto.randomInt(1, 80);
         if (!resultmap.has(rnd)) {
             resultmap.set(rnd, true);
