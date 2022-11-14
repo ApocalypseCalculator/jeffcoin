@@ -48,6 +48,7 @@ model Bet {
     winning String //also JSON :monke:
     amount  Int
     payout  Int
+    time    Int
     userid  String
     user    User   @relation(fields: [userid], references: [userid])
 }

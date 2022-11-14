@@ -32,9 +32,23 @@ module.exports.execute = function (req, res) {
             _max: {
                 amount: true,
                 payout: true
+            },
+            take: 100,
+            orderBy: {
+                time: 'desc'
             }
         }).then(aggr => {
-            res.json(aggr);
+            prisma.bet.findMany({
+                where: {
+                    userid: user.userid
+                },
+                take: 10,
+                orderBy: {
+                    time: 'desc'
+                }
+            }).then(bets => {
+                res.json({ aggregation: aggr, bets: bets });
+            })
         })
     }
 }

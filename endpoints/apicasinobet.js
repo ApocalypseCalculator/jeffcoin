@@ -72,7 +72,8 @@ module.exports.execute = function (req, res) {
                                     winning: JSON.stringify(winarr),
                                     amount: amt,
                                     payout: payout,
-                                    userid: user.userid
+                                    userid: user.userid,
+                                    time: Date.now()
                                 }
                             }),
                             prisma.user.update({
