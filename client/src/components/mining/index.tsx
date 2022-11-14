@@ -116,8 +116,6 @@ export const Mining = () => {
     useInterval(() => {
         if (!started && ready && block.blockid) {
             getBlock().then((data) => {
-                console.log(data.blockid);
-                console.log(block.blockid);
                 if (data.blockid !== block.blockid) {
                     session.miner.postMessage(["stop"]);
                     setLog((prevlog) => {

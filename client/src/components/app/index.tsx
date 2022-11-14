@@ -10,6 +10,7 @@ import { Wallet } from "../wallet";
 import { Block } from "../block";
 import { Blocks } from "../blocks";
 import { Mining } from "../mining";
+import { Casino } from "../casino";
 import { Transactions } from "../transactions";
 import { Login } from "../login";
 import { Register } from "../register";
@@ -39,6 +40,9 @@ export const _App = () => {
                                 </li>
                                 <li className={"nav-item"}>
                                     <Link class="nav-link" href="/wallet" text="Wallet"></Link>
+                                </li>
+                                <li className={"nav-item"}>
+                                    <Link class="nav-link" href="/casino" text="Casino"></Link>
                                 </li>
                             </> : <></>
                         }
@@ -77,6 +81,7 @@ export const _App = () => {
                     <Route path="/block" element={<Block />} />
                     <Route path="/blocks" element={<Blocks />} />
                     <Route path="/mining" element={<Mining />} />
+                    <Route path="/casino" element={<Casino />} />
                     <Route path="/transactions" element={<Transactions />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
