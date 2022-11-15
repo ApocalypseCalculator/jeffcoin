@@ -62,7 +62,7 @@ module.exports.execute = function (req, res) {
                             orderBy: {
                                 createtime: 'asc'
                             },
-                            take: 5
+                            take: 20
                         }).then(trns => {
                             let updatelist = trns.map(e => {
                                 return prisma.transaction.update({
