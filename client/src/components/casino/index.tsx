@@ -34,43 +34,50 @@ export const Casino = () => {
                         <h3>Loading...</h3>
                     </> : <>
                         <div className="container">
-                            <h3>Global Stats  - Last 100</h3>
-                            <table className={"table table-bordered"}>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">Total Payout</th>
-                                        <td>
-                                            {stats.aggregation._sum.payout}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Total Bet</th>
-                                        <td>
-                                            {stats.aggregation._sum.amount}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Total Plays</th>
-                                        <td>{stats.aggregation._count}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Highest Payout</th>
-                                        <td>{stats.aggregation._max.payout}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Highest Bet</th>
-                                        <td>{stats.aggregation._max.amount}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Average Payout</th>
-                                        <td>{stats.aggregation._avg.payout}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Average Bet</th>
-                                        <td>{stats.aggregation._avg.amount}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div className="row">
+                                <div className="container col-10">
+                                    <h3>Global Stats  - Last 100</h3>
+                                    <table className={"table table-bordered"}>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Total Payout</th>
+                                                <td>
+                                                    {stats.aggregation._sum.payout}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Total Bet</th>
+                                                <td>
+                                                    {stats.aggregation._sum.amount}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Total Plays</th>
+                                                <td>{stats.aggregation._count}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Highest Payout</th>
+                                                <td>{stats.aggregation._max.payout}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Highest Bet</th>
+                                                <td>{stats.aggregation._max.amount}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Average Payout</th>
+                                                <td>{stats.aggregation._avg.payout}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Average Bet</th>
+                                                <td>{stats.aggregation._avg.amount}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="container col-2">
+                                    <img className="img-fluid" src={"/static/images/jeffhodl.png"}></img>
+                                </div>
+                            </div>
                         </div>
                         <div className="container">
                             <GuessTable />
