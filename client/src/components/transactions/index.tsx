@@ -55,6 +55,9 @@ export const Transactions = () => {
                     </> : <>
                         {
                             <div className={"container"}>
+                                <div className="container">
+                                    <img className="imgcenter img-fluid" src="/static/images/jefftrade.png" style={{ maxHeight: 300 }}></img>
+                                </div>
                                 <p>Transaction List - Page {page}</p>
                                 <nav aria-label="Page navigation example">
                                     <ul className="pagination">
