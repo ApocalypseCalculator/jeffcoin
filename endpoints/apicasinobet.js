@@ -64,7 +64,7 @@ module.exports.execute = function (req, res) {
                             }
                         });
                         let payout = payouts[count] * amt;
-                        prisma.$transaction([
+                        let list = [
                             prisma.bet.create({
                                 data: {
                                     betid: nanoid.nanoid(16),
@@ -95,8 +95,10 @@ module.exports.execute = function (req, res) {
                                     status: 2,
                                     createtime: Date.now()
                                 }
-                            }),
-                            prisma.transaction.create({
+                            })
+                        ]
+                        if (payout !== 0) {
+                            list.push(prisma.transaction.create({
                                 data: {
                                     id: nanoid.nanoid(16),
                                     fromid: "1",
@@ -105,8 +107,9 @@ module.exports.execute = function (req, res) {
                                     status: 2,
                                     createtime: Date.now()
                                 }
-                            })
-                        ]).then(() => {
+                            }));
+                        }
+                        prisma.$transaction(list).then(() => {
                             res.json({ message: `Success`, amt: amt, payout: payout, winning: winarr });
                         }).catch(() => {
                             res.status(500).json({ status: 500, error: 'Internal database error' });
