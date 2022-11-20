@@ -59,6 +59,7 @@ export const Mining = () => {
 
     React.useEffect(() => {
         if (session.miner instanceof Worker && session.user.loggedin) {
+            session.miner.postMessage(['init']);
             getBlock().then(data => {
                 setBlock(data);
                 session.miner.postMessage(['data', data]);
@@ -109,6 +110,7 @@ export const Mining = () => {
             }
             return () => {
                 session.miner.onmessage = () => { };
+                session.miner.postMessage(['destroy']);
             }
         }
     }, [session.miner, session.user.loggedin]);

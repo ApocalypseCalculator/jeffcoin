@@ -71,7 +71,7 @@ export const SessionProvider = (props: { children: React.ReactNode }) => {
                 localStorage.removeItem("token");
             })
         }
-        setMiner(new Worker('/static/js/miner.js'));
+        setMiner(new Worker('/static/js/minemanager.js'));
     }, []);
     return (
         <SessionContext.Provider value={{ user, token, updateToken, miner }}>
