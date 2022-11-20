@@ -118,7 +118,7 @@ export const Mining = () => {
     }, [session.miner, session.user.loggedin]);
 
     useInterval(() => {
-        if (!started && ready && block.blockid) {
+        if (started && ready && block.blockid) {
             getBlock().then((data) => {
                 if (data.blockid !== block.blockid) {
                     session.miner.postMessage(["stop"]);
@@ -140,6 +140,7 @@ export const Mining = () => {
     }, 60 * 1000); //check every minute
 
     React.useEffect(() => {
+        //start's read values are inverted here as it is after the state update
         if (started && ready && block.blockid !== "") {
             session.miner.postMessage(["start"]);
             setLog((prevlog) => {
@@ -193,7 +194,9 @@ export const Mining = () => {
                             </div>
                         </div>
                         <button className="btn btn-primary" type="button" onClick={() => {
-                            setStarted(!started);
+                            setStarted((curval) => {
+                                return !curval;
+                            });
                         }}>
                             {started ? "Stop" : "Start"} Mining
                         </button>
