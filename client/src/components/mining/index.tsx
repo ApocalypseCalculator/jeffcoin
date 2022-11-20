@@ -176,7 +176,7 @@ export const Mining = () => {
                         <div className="row">
                             <div className="form-group col">
                                 <label htmlFor="workercount">Workers:</label>
-                                <input className="form-control" type={"number"} id="workercount" value={workers} step={1} onChange={text => {
+                                <input className="form-control" type={"number"} id="workercount" value={workers} step={1} disabled={started} onChange={text => {
                                     let val = parseInt(text.target.value);
                                     if (val && !isNaN(val) && val > 0 && val <= 16) {
                                         setWorkers(val);
@@ -185,9 +185,9 @@ export const Mining = () => {
                             </div>
                             <div className="form-group col">
                                 <label htmlFor="batchsize">Batch Size:</label>
-                                <input className="form-control" type={"number"} id="batchsize" value={batch} step={10000} onChange={text => {
+                                <input className="form-control" type={"number"} id="batchsize" value={batch} step={10000} disabled={started} onChange={text => {
                                     let val = parseInt(text.target.value);
-                                    if (val && !isNaN(val) && val % 10000 == 0 && val > 50000) {
+                                    if (val && !isNaN(val) && val % 10000 == 0 && val >= 50000) {
                                         setBatch(val);
                                     }
                                 }}></input>
