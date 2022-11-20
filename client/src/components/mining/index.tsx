@@ -12,6 +12,8 @@ export const Mining = () => {
     const [started, setStarted] = React.useState(false);
     const [log, setLog] = React.useState("==================== START LOG ====================");
     const [block, setBlock] = React.useState({} as any);
+    const [workers, setWorkers] = React.useState(1);
+    const [batch, setBatch] = React.useState(100000);
 
     function getBlock() {
         return new Promise<any>((resolve) => {
@@ -152,12 +154,44 @@ export const Mining = () => {
         }
     }, [started]);
 
+    React.useEffect(() => {
+        if (!started && ready) {
+            session.miner.postMessage(["workers", workers]);
+        }
+    }, [workers]);
+
+    React.useEffect(() => {
+        if (!started && ready) {
+            session.miner.postMessage(["batch", batch]);
+        }
+    }, [batch]);
+
     return (
         <div className={"mining"}>
             <div id={"mining-content"}>
                 {
                     ready ? <div className={"container"}>
                         <img className="imgcenter" src={"/static/images/minejeffcoin.png"}></img>
+                        <div className="row">
+                            <div className="form-group col">
+                                <label htmlFor="workercount">Workers:</label>
+                                <input className="form-control" type={"number"} id="workercount" value={workers} step={1} onChange={text => {
+                                    let val = parseInt(text.target.value);
+                                    if (val && !isNaN(val) && val > 0 && val <= 16) {
+                                        setWorkers(val);
+                                    }
+                                }}></input>
+                            </div>
+                            <div className="form-group col">
+                                <label htmlFor="batchsize">Batch Size:</label>
+                                <input className="form-control" type={"number"} id="batchsize" value={batch} step={10000} onChange={text => {
+                                    let val = parseInt(text.target.value);
+                                    if (val && !isNaN(val) && val % 10000 == 0 && val > 50000) {
+                                        setBatch(val);
+                                    }
+                                }}></input>
+                            </div>
+                        </div>
                         <button className="btn btn-primary" type="button" onClick={() => {
                             setStarted(!started);
                         }}>
