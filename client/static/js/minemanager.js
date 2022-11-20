@@ -57,6 +57,7 @@ function setWorkers(n) {
     else if (n > workers.length) {
         for (let i = workers.length; i < n; i++) {
             workers.push(new Worker('/static/js/miner.js'));
+            workers[i].postMessage(["data", blockdata]);
         }
     }
 }
