@@ -5,6 +5,7 @@ const default_workercount = 1;
 let workers = [];
 let curproof = 0;
 let batch = 100000; //hashing will be dispatched in batches of this value (curproof * batch)
+let starttime = 0;
 
 onmessage = async (e) => {
     if (e.data[0] == "start") {
@@ -64,6 +65,7 @@ function setWorkers(n) {
 
 function start() {
     started = true;
+    starttime = Date.now();
     curproof = 0;
     postMessage(["log", `Starting mining for ${blockdata.blockid}`]);
     for (let i = 0; i < workers.length; i++) {
@@ -98,11 +100,11 @@ function threadReceiver(event, workerID) {
         }
         else if (event.data[0] == "proof") {
             postMessage(event.data);
-            postMessage(["log", `Mining done for ${blockdata.blockid} with proof ${event.data[1]} on miner #${workerID}. Waiting on new job`]);
+            postMessage(["log", `Mining done for ${blockdata.blockid} with proof ${event.data[1]} on miner #${workerID} with total runtime of ${new Date(Date.now() - starttime).toISOString().substr(11, 8)}. Waiting on new job`]);
             stop();
         }
         else if (event.data[0] == "done") {
-            postMessage(["log", `Miner #${workerID}: Calculated ${batch} hashes from ${event.data[1]} to ${event.data[2]} ${Date.now()}`]);
+            postMessage(["log", `Miner #${workerID}: Calculated ${batch} hashes from ${event.data[1]} to ${event.data[2]}`]);
             workers[workerID].postMessage(["start", curproof * batch, (curproof + 1) * batch]);
             curproof++;
         }
