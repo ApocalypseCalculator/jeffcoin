@@ -21,7 +21,6 @@ onmessage = async (e) => {
     }
     else if (e.data[0] == "workers") {
         //THIS SHOULD NOT BE CALLED DURING MINING
-        console.log(e.data[1]);
         setWorkers(e.data[1]);
     }
     else if (e.data[0] == "batch") {
@@ -47,14 +46,13 @@ function destroy() {
 }
 
 function setWorkers(n) {
-    console.log(n + ' ' + workers.length);
     if (started) {
         return;
     }
     else if (n < workers.length) {
-        for (let i = n; i < workers.length; i++) {
+        for (let i = workers.length; i > n; i--) {
             workers.pop().terminate();
-        }        
+        }
     }
     else if (n > workers.length) {
         for (let i = workers.length; i < n; i++) {
