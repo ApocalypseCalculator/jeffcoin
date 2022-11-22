@@ -145,7 +145,7 @@ __device__ char *itoa(uint64_t num, char *str)
     return str;
 }
 
-__device__ char *formJSONStr(char *dest, Block block, uint64_t nonce)
+__device__ char *formJSONStr(char *dest, Block *block, uint64_t nonce)
 {
     /*
     blockid,
@@ -155,17 +155,17 @@ __device__ char *formJSONStr(char *dest, Block block, uint64_t nonce)
     transactions
     */
     my_strcat(dest, "{\"blockid\":\"");
-    my_strcat(dest, block.blockid);
+    my_strcat(dest, block->blockid);
     my_strcat(dest, "\",\"difficulty\":");
     char diff[100];
-    my_strcat(dest, itoa(block.difficulty, diff));
+    my_strcat(dest, itoa(block->difficulty, diff));
     my_strcat(dest, ",\"prevhash\":\"");
-    my_strcat(dest, block.prevhash);
+    my_strcat(dest, block->prevhash);
     my_strcat(dest, "\",\"proof\":");
     char noncestr[100];
     my_strcat(dest, itoa(nonce, noncestr));
     my_strcat(dest, ",\"transctions\":");
-    my_strcat(dest, block.transactions);
+    my_strcat(dest, block->transactions);
     my_strcat(dest, "}");
     return dest;
 }
@@ -275,6 +275,8 @@ void print_state()
     }
 }
 
+static Block block;
+
 int main()
 {
 
@@ -283,26 +285,34 @@ int main()
 
     t_last_updated = std::chrono::high_resolution_clock::now();
 
-    std::string in;
+    
 
-    std::cout << "Enter a message : ";
-    getline(std::cin, in);
-
-    std::cout << "Nonce : ";
-    std::cin >> user_nonce;
-
-    std::cout << "Difficulty : ";
+    std::string blockid;
+    std::string prevhash;
+    std::string transactions;
+    std::cout << "Enter block ID : ";
+    getline(std::cin, blockid);
+    std::cout << "Enter previous block's hash : ";
+    getline(std::cin, prevhash);
+    std::cout << "Enter transactions JSON : ";
+    getline(std::cin, transactions);
+    std::cout << "Enter difficulty : ";
     std::cin >> difficulty;
     std::cout << std::endl;
 
-    const size_t input_size = in.size();
+    strcpy(block.blockid, blockid.c_str());
+    strcpy(block.prevhash, prevhash.c_str());
+    strcpy(block.transactions, transactions.c_str());
+    block.difficulty = difficulty;
+
+    const size_t input_size = sizeof(block);
 
     // Input string for the device
     char *d_in = nullptr;
 
     // Create the input string for the device
     cudaMalloc(&d_in, input_size + 1);
-    cudaMemcpy(d_in, in.c_str(), input_size + 1, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_in, &block, input_size + 1, cudaMemcpyHostToDevice);
 
     cudaMallocManaged(&g_out, input_size + 32 + 1);
     cudaMallocManaged(&g_hash_out, 32);
@@ -322,7 +332,7 @@ int main()
     while (!*g_found)
     {
         //todo: modify to pass block data
-        sha256_kernel<<<1, 1, dynamic_shared_size>>>(g_out, g_hash_out, g_found, d_in, input_size, difficulty, nonce);
+        sha256_kernel<<<1, 1, dynamic_shared_size>>>(g_out, g_hash_out, g_found, &block, input_size, difficulty, nonce);
 
         cudaError_t err = cudaDeviceSynchronize();
         if (err != cudaSuccess)
