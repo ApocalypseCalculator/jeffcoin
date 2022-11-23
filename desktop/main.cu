@@ -9,6 +9,7 @@
 #include <string>
 #include <cassert>
 #include <cstring>
+#include <stdio.h>
 
 #include "sha256.cuh"
 
@@ -171,24 +172,39 @@ __device__ char *formJSONStr(char *dest, Block *block, uint64_t nonce)
 }
 
 extern __shared__ char array[];
-__global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_found_hash, int *out_found, const Block *in_input_string, size_t in_input_string_size, uint8_t difficulty, uint64_t nonce_offset)
+extern __shared__ Block blockdata;
+__global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_found_hash, int *out_found, const Block *in_block, size_t in_block_size, uint8_t difficulty, uint64_t nonce_offset)
 {
 
     // If this is the first thread of the block, init the input block in shared memory
-    Block *in;
+    Block *in = &blockdata;
+    //printf("owo1");
     if (threadIdx.x == 0)
     {
-        memcpy(in, in_input_string, in_input_string_size + 1);
+        printf("%s %s %s %d ", in_block->blockid, in_block->prevhash, in_block->transactions, in_block->difficulty);
+        printf("%p %d ", in, sizeof(blockdata));
+        printf("%p %d ", in_block, in_block_size);
+        //memcpy(in, in_block, in_block_size);
+        in->blockid = in_block->blockid;
+        in->prevhash = in_block->prevhash;
+        in->transactions = in_block->transactions;
+        in->difficulty = in_block->difficulty;
+        printf("owo3");
+        printf("\n");
     }
 
-    __syncthreads(); // Ensure the input string has been written in SMEM
+    //printf("owo2");
+
+    __syncthreads(); // Ensure the input block has been written in SMEM
+
+    //printf("owo");
 
     uint64_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     uint64_t nonce = idx + nonce_offset;
 
     // The first byte we can write because there is the input string at the begining
     // Respects the memory padding of 8 bit (char).
-    size_t const minArray = static_cast<size_t>(ceil((in_input_string_size + 1) / 8.f) * 8);
+    size_t const minArray = static_cast<size_t>(ceil((in_block_size + 1) / 8.f) * 8);
 
     uintptr_t sha_addr = threadIdx.x * (64) + minArray;
     uintptr_t nonce_addr = sha_addr + 32;
@@ -210,7 +226,7 @@ __global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_f
         char *dest = (char *)malloc(sizeof(char) * (1));
         dest[0] = '\0';
         //error here (todo: fix)
-        sha256_update(&ctx, (unsigned char *)formJSONStr(dest, in, nonce), in_input_string_size);
+        sha256_update(&ctx, (unsigned char *)formJSONStr(dest, in, nonce), in_block_size);
         free(dest);
         sha256_final(&ctx, sha);
 
@@ -229,7 +245,7 @@ __global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_f
     { // if zero padding, checks if subbing *out_found with 1 is successful
         memcpy(out_found_hash, sha, 32);
         memcpy(out_input_string_nonce, out, size);
-        memcpy(out_input_string_nonce + size, in, in_input_string_size + 1);
+        memcpy(out_input_string_nonce + size, in, in_block_size + 1);
     }
 }
 
@@ -300,6 +316,10 @@ int main()
     std::cin >> difficulty;
     std::cout << std::endl;
 
+    block.blockid = (char *) malloc(blockid.size());
+    block.prevhash = (char *) malloc(prevhash.size());
+    block.transactions = (char *) malloc(transactions.size());
+
     strcpy(block.blockid, blockid.c_str());
     strcpy(block.prevhash, prevhash.c_str());
     strcpy(block.transactions, transactions.c_str());
@@ -308,7 +328,7 @@ int main()
     const size_t input_size = sizeof(block);
 
     // Input string for the device
-    char *d_in = nullptr;
+    Block *d_in = nullptr;
 
     // Create the input string for the device
     cudaMalloc(&d_in, input_size + 1);
@@ -332,11 +352,11 @@ int main()
     while (!*g_found)
     {
         //todo: modify to pass block data
-        sha256_kernel<<<1, 1, dynamic_shared_size>>>(g_out, g_hash_out, g_found, &block, input_size, difficulty, nonce);
-
+        sha256_kernel<<<1, 1, dynamic_shared_size>>>(g_out, g_hash_out, g_found, d_in, input_size, difficulty, nonce);
         cudaError_t err = cudaDeviceSynchronize();
         if (err != cudaSuccess)
         {
+            std::cout << err << std::endl;
             throw std::runtime_error("Device error");
         }
 
