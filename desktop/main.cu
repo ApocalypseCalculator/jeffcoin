@@ -21,7 +21,6 @@
 static size_t difficulty = 1;
 
 // Output string by the device read by host
-char *g_out = nullptr;
 unsigned char *g_hash_out = nullptr;
 int *g_found = nullptr;
 
@@ -146,7 +145,7 @@ __device__ char *itoa(uint64_t num, char *str)
     return str;
 }
 
-__device__ char *formJSONStr(char *dest, Block *block, uint64_t nonce)
+__device__ char *formJSONStr(char *dest, char *blockid, char *prevhash, char *transactions, uint8_t difficulty, uint64_t nonce)
 {
     /*
     blockid,
@@ -155,49 +154,71 @@ __device__ char *formJSONStr(char *dest, Block *block, uint64_t nonce)
     proof,
     transactions
     */
+    printf("Difficulty: %d\n", difficulty);
+    printf("Blockid: %s\n", blockid);
+    printf("So far: %s\n", dest);
     my_strcat(dest, "{\"blockid\":\"");
-    my_strcat(dest, block->blockid);
+    my_strcat(dest, blockid);
     my_strcat(dest, "\",\"difficulty\":");
-    char diff[100];
-    my_strcat(dest, itoa(block->difficulty, diff));
+    printf("So far: %s\n", dest);
+    char diff[32];
+    my_strcat(dest, itoa(difficulty, diff));
     my_strcat(dest, ",\"prevhash\":\"");
-    my_strcat(dest, block->prevhash);
+    my_strcat(dest, prevhash);
     my_strcat(dest, "\",\"proof\":");
-    char noncestr[100];
+    printf("So far: %s\n", dest);
+    char noncestr[32];
     my_strcat(dest, itoa(nonce, noncestr));
-    my_strcat(dest, ",\"transctions\":");
-    my_strcat(dest, block->transactions);
+    my_strcat(dest, ",\"transactions\":");
+    my_strcat(dest, transactions);
     my_strcat(dest, "}");
+    printf("So far: %s\n", dest);
     return dest;
 }
 
 extern __shared__ char array[];
-extern __shared__ Block blockdata;
-__global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_found_hash, int *out_found, const Block *in_block, size_t in_block_size, uint8_t difficulty, uint64_t nonce_offset)
+extern __shared__ char blockdata[];
+__global__ void sha256_kernel(unsigned char *out_found_hash, int *out_found, const char *in_blockid, const char * in_prevhash, const char * in_transactions, size_t in_bidsize, size_t in_bphashsize, size_t in_btranssize, size_t in_block_size, uint8_t difficulty, uint64_t nonce_offset)
 {
 
     // If this is the first thread of the block, init the input block in shared memory
-    Block *in = &blockdata;
-    //printf("owo1");
+    Block *in = (Block*) &blockdata;
+    printf("owo1\n");
+
+
+    char* in_bid = (char*) &blockdata[0];
+    char* in_bphash = (char*) &blockdata[1];
+    char* in_btrans = (char*) &blockdata[2];
+
     if (threadIdx.x == 0)
     {
-        printf("%s %s %s %d ", in_block->blockid, in_block->prevhash, in_block->transactions, in_block->difficulty);
-        printf("%p %d ", in, sizeof(blockdata));
-        printf("%p %d ", in_block, in_block_size);
+        //printf("%p %d ", in, sizeof(blockdata));
+        //printf("%p %d ", in_block, in_block_size);
+        //printf("%s %s %s %d ", in_block->blockid, in_block->prevhash, in_block->transactions, in_block->difficulty);
         //memcpy(in, in_block, in_block_size);
-        in->blockid = in_block->blockid;
-        in->prevhash = in_block->prevhash;
-        in->transactions = in_block->transactions;
-        in->difficulty = in_block->difficulty;
-        printf("owo3");
-        printf("\n");
+        printf("%s %s %s\n", in_blockid, in_prevhash, in_transactions);
+        printf("%d %d %d\n", in_bidsize, in_bphashsize, in_btranssize);
+        /*memcpy(in_bid, in_blockid, in_bidsize + 1);
+        memcpy(in_bphash, in_prevhash, in_bphashsize + 1);
+        memcpy(in_btrans, in_transactions, in_btranssize + 1);*/
+        my_strcpy(in_bid, in_blockid);
+        my_strcpy(in_bphash, in_prevhash);
+        my_strcpy(in_btrans, in_transactions);
+        printf("%s %s %s\n", in_bid, in_bphash, in_btrans);
+        /*in->blockid = in_blockid;
+        in->prevhash = in_prevhash;
+        in->transactions = in_transactions;*/
+        //in->difficulty = difficulty;
+        //printf("owo3");
+        //printf("\n");
+        printf("Copied blockid: %s", in_bid);
     }
 
     //printf("owo2");
 
     __syncthreads(); // Ensure the input block has been written in SMEM
 
-    //printf("owo");
+    //printf("owo\n");
 
     uint64_t idx = blockIdx.x * blockDim.x + threadIdx.x;
     uint64_t nonce = idx + nonce_offset;
@@ -217,16 +238,24 @@ __global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_f
 
     assert(size <= 32);
 
+    printf("owo?\n");
+
     {
         // unsigned char tmp[32];
 
         SHA256_CTX ctx;
         sha256_init(&ctx);
+        printf("owo2?\n");
         // sha256_update(&ctx, out, size);
         char *dest = (char *)malloc(sizeof(char) * (1));
         dest[0] = '\0';
+        printf("owoo!\n");
+        formJSONStr(dest, in_bid, in_bphash, in_btrans, difficulty, nonce);
+        printf("%s\n", dest);
         //error here (todo: fix)
-        sha256_update(&ctx, (unsigned char *)formJSONStr(dest, in, nonce), in_block_size);
+        printf("owo3?\n");
+        sha256_update(&ctx, (unsigned char *)dest, sizeof(dest));
+        //printf("owo4?\n");
         free(dest);
         sha256_final(&ctx, sha);
 
@@ -236,6 +265,8 @@ __global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_f
         sha256_final(&ctx, sha);*/
     }
 
+    printf("owo5?\n");
+
     // atomicExch(out_found, 1);
     // memcpy(out_found_hash, sha, 32);
     // memcpy(out_input_string_nonce, out, size);
@@ -244,8 +275,6 @@ __global__ void sha256_kernel(char *out_input_string_nonce, unsigned char *out_f
     if (checkZeroPadding(sha, difficulty) && atomicExch(out_found, 1) == 0)
     { // if zero padding, checks if subbing *out_found with 1 is successful
         memcpy(out_found_hash, sha, 32);
-        memcpy(out_input_string_nonce, out, size);
-        memcpy(out_input_string_nonce + size, in, in_block_size + 1);
     }
 }
 
@@ -286,12 +315,9 @@ void print_state()
 
     if (*g_found)
     {
-        std::cout << g_out << std::endl;
         print_hash(g_hash_out);
     }
 }
-
-static Block block;
 
 int main()
 {
@@ -316,43 +342,41 @@ int main()
     std::cin >> difficulty;
     std::cout << std::endl;
 
-    block.blockid = (char *) malloc(blockid.size());
-    block.prevhash = (char *) malloc(prevhash.size());
-    block.transactions = (char *) malloc(transactions.size());
+    char *d_in_blockid = nullptr;
+    cudaMalloc(&d_in_blockid, blockid.size() + 1);
+    cudaMemcpy(d_in_blockid, blockid.c_str(), blockid.size() + 1, cudaMemcpyHostToDevice);
 
-    strcpy(block.blockid, blockid.c_str());
-    strcpy(block.prevhash, prevhash.c_str());
-    strcpy(block.transactions, transactions.c_str());
-    block.difficulty = difficulty;
+    char *d_in_prevhash = nullptr;
+    cudaMalloc(&d_in_prevhash, prevhash.size() + 1);
+    cudaMemcpy(d_in_prevhash, prevhash.c_str(), prevhash.size() + 1, cudaMemcpyHostToDevice);
 
-    const size_t input_size = sizeof(block);
+    char *d_in_transactions = nullptr;
+    cudaMalloc(&d_in_transactions, transactions.size() + 1);
+    cudaMemcpy(d_in_transactions, transactions.c_str(), transactions.size() + 1, cudaMemcpyHostToDevice);
 
-    // Input string for the device
-    Block *d_in = nullptr;
-
-    // Create the input string for the device
-    cudaMalloc(&d_in, input_size + 1);
-    cudaMemcpy(d_in, &block, input_size + 1, cudaMemcpyHostToDevice);
-
-    cudaMallocManaged(&g_out, input_size + 32 + 1);
     cudaMallocManaged(&g_hash_out, 32);
     cudaMallocManaged(&g_found, sizeof(int));
     *g_found = 0;
-    std::cout << &g_found << " " << *g_found << " " << g_found << "\n";
 
     nonce += user_nonce;
     last_nonce_since_update += user_nonce;
 
     pre_sha256();
 
-    size_t dynamic_shared_size = (ceil((input_size + 1) / 8.f) * 8) + (64 * BLOCK_SIZE);
+    const size_t totalInpSize = blockid.size() + prevhash.size() + transactions.size();
 
-    std::cout << "Shared memory is " << dynamic_shared_size / 1024 << "KB" << std::endl;
+    std::cout << totalInpSize << " (inp size)\n";
 
-    while (!*g_found)
+    size_t dynamic_shared_size = (ceil((totalInpSize + 1 + 1 + 1) / 8.f) * 8) + (64 * BLOCK_SIZE);
+
+    std::cout << "Shared memory is " << dynamic_shared_size / 1024 << "KB " << dynamic_shared_size << std::endl;
+
+    //while (!*g_found)
     {
         //todo: modify to pass block data
-        sha256_kernel<<<1, 1, dynamic_shared_size>>>(g_out, g_hash_out, g_found, d_in, input_size, difficulty, nonce);
+        sha256_kernel<<<1, 1, dynamic_shared_size>>>(g_hash_out, g_found, d_in_blockid, d_in_prevhash, d_in_transactions, blockid.size(), prevhash.size(), transactions.size(), totalInpSize, difficulty, nonce);
+        cudaError_t err1 = cudaGetLastError();
+        //std::cout << err1 << std::endl;
         cudaError_t err = cudaDeviceSynchronize();
         if (err != cudaSuccess)
         {
@@ -362,16 +386,17 @@ int main()
 
         nonce += NUMBLOCKS * BLOCK_SIZE;
 
-        print_state();
+        //print_state();
     }
 
     std::cout << &g_found << " " << *g_found << " " << g_found << "\n";
 
-    cudaFree(g_out);
     cudaFree(g_hash_out);
     cudaFree(g_found);
 
-    cudaFree(d_in);
+    cudaFree(d_in_blockid);
+    cudaFree(d_in_prevhash);
+    cudaFree(d_in_transactions);
 
     cudaDeviceReset();
 
