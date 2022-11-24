@@ -177,18 +177,20 @@ __device__ char *formJSONStr(char *dest, char *blockid, char *prevhash, char *tr
 }
 
 extern __shared__ char array[];
-extern __shared__ char blockdata[];
+extern __shared__ char blockdata_bid[];
+extern __shared__ char blockdata_bphash[];
+extern __shared__ char blockdata_btrans[];
 __global__ void sha256_kernel(unsigned char *out_found_hash, int *out_found, const char *in_blockid, const char * in_prevhash, const char * in_transactions, size_t in_bidsize, size_t in_bphashsize, size_t in_btranssize, size_t in_block_size, uint8_t difficulty, uint64_t nonce_offset)
 {
 
     // If this is the first thread of the block, init the input block in shared memory
-    Block *in = (Block*) &blockdata;
-    printf("owo1\n");
+    //Block *in = (Block*) &blockdata;
+    //printf("owo1\n");
 
 
-    char* in_bid = (char*) &blockdata[0];
-    char* in_bphash = (char*) &blockdata[1];
-    char* in_btrans = (char*) &blockdata[2];
+    char* in_bid = (char*) &blockdata_bid[0];
+    char* in_bphash = (char*) &blockdata_bphash[0];
+    char* in_btrans = (char*) &blockdata_btrans[0];
 
     if (threadIdx.x == 0)
     {
