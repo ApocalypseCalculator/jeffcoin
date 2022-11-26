@@ -14,15 +14,18 @@
 #include "sha256.cuh"
 
 #define SHOW_INTERVAL_MS 2000
-#define BLOCK_SIZE 256
+//#define BLOCK_SIZE 256
 #define SHA_PER_ITERATIONS 8'388'608
-#define NUMBLOCKS (SHA_PER_ITERATIONS + BLOCK_SIZE - 1) / BLOCK_SIZE
+//#define NUMBLOCKS (SHA_PER_ITERATIONS + BLOCK_SIZE - 1) / BLOCK_SIZE
+#define BLOCK_SIZE 4
+#define NUMBLOCKS 4
 
 static size_t difficulty = 1;
 
 // Output string by the device read by host
 unsigned char *g_hash_out = nullptr;
 int *g_found = nullptr;
+int *g_foundval = nullptr;
 
 static uint64_t nonce = 0;
 static uint64_t user_nonce = 0;
@@ -185,7 +188,7 @@ __device__ char *formJSONStr(char *dest, char *blockid, char *prevhash, char *tr
 }
 
 extern __shared__ char array[];
-__global__ void sha256_kernel(unsigned char *out_found_hash, int *out_found, const char *in_blockid, const char *in_prevhash, const char *in_transactions, size_t in_bidsize, size_t in_bphashsize, size_t in_btranssize, size_t in_block_size, uint8_t difficulty, uint64_t nonce_offset)
+__global__ void sha256_kernel(unsigned char *out_found_hash, int *out_found, int *out_foundval, const char *in_blockid, const char *in_prevhash, const char *in_transactions, size_t in_bidsize, size_t in_bphashsize, size_t in_btranssize, size_t in_block_size, uint8_t difficulty, uint64_t nonce_offset)
 {
 
     // If this is the first thread of the block, init the input block in shared memory
@@ -260,7 +263,7 @@ __global__ void sha256_kernel(unsigned char *out_found_hash, int *out_found, con
         char *dest = (char *)malloc(sizeof(char) * (1));
         dest[0] = '\0';
         // printf("owoo!\n");
-        printf("%d\n", nonce);
+        //printf("%d blockidx %d %d %d blockdim %d %d %d threadidx %d %d %d\n", nonce, blockIdx.x, blockIdx.y, blockIdx.z, blockDim.y, blockDim.z, threadIdx.x, threadIdx.y, threadIdx.z);
         formJSONStr(dest, in_bid, in_bphash, in_btrans, difficulty, nonce);
         //printf("%s %d\n", dest, sizeof(char) * my_strlen(dest));
         // error here (todo: fix)
@@ -275,15 +278,15 @@ __global__ void sha256_kernel(unsigned char *out_found_hash, int *out_found, con
         sha256_update(&ctx, tmp, 32);
         sha256_final(&ctx, sha);*/
     }
-
     // printf("owo5?\n");
 
     //printf("%s\n", sha);
 
-    if (checkZeroPadding(sha, difficulty) && atomicExch(out_found, 1) == 0)
+    if (checkZeroPadding(sha, difficulty) && atomicExch(out_found, 1) == 0 && atomicExch(out_foundval, nonce) == 0)
     { // if zero padding, checks if subbing *out_found with 1 is successful
         memcpy(out_found_hash, sha, 32);
     }
+    free(sha_tmp);
 }
 
 void pre_sha256()
@@ -324,6 +327,7 @@ void print_state()
     if (*g_found)
     {
         print_hash(g_hash_out);
+        std::cout << std::fixed << "Final Nonce : " << *g_foundval << std::endl;
     }
 }
 
@@ -363,6 +367,8 @@ int main()
     cudaMallocManaged(&g_hash_out, 32);
     cudaMallocManaged(&g_found, sizeof(int));
     *g_found = 0;
+    cudaMallocManaged(&g_foundval, sizeof(int));
+    *g_foundval = 0;
 
     pre_sha256();
 
@@ -374,14 +380,17 @@ int main()
 
     std::cout << "Shared memory is " << dynamic_shared_size / 1024 << "KB " << dynamic_shared_size << std::endl;
 
+    int ctr = 0;
+
     while (!*g_found)
     {
         // todo: modify to pass block data
-        sha256_kernel<<<NUMBLOCKS, BLOCK_SIZE, dynamic_shared_size>>>(g_hash_out, g_found, d_in_blockid, d_in_prevhash, d_in_transactions, blockid.size(), prevhash.size(), transactions.size(), totalInpSize, difficulty, nonce);
+        sha256_kernel<<<NUMBLOCKS, BLOCK_SIZE, dynamic_shared_size>>>(g_hash_out, g_found, g_foundval, d_in_blockid, d_in_prevhash, d_in_transactions, blockid.size(), prevhash.size(), transactions.size(), totalInpSize, difficulty, nonce);
         cudaError_t err1 = cudaGetLastError();
         cudaError_t err = cudaDeviceSynchronize();
         if (err != cudaSuccess)
         {
+            std::cout << "Iterations: " << ctr << " " << nonce << std::endl;
             std::cout << err << std::endl;
             throw std::runtime_error("Device error");
         }
@@ -389,12 +398,14 @@ int main()
         nonce += NUMBLOCKS * BLOCK_SIZE;
 
         print_state();
+        ctr++;
     }
 
     //std::cout << &g_found << " " << *g_found << " " << g_found << "\n";
 
     cudaFree(g_hash_out);
     cudaFree(g_found);
+    cudaFree(g_foundval);
 
     cudaFree(d_in_blockid);
     cudaFree(d_in_prevhash);
