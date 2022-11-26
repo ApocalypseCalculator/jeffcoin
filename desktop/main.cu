@@ -248,7 +248,7 @@ void print_state()
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 
     cudaSetDevice(0);
@@ -259,7 +259,22 @@ int main()
     std::string blockid;
     std::string prevhash;
     std::string transactions;
-    std::cout << "Enter block ID : ";
+    if(argc < 5) {
+        std::cout << "Invalid arguments" << std::endl;
+        return 1;
+    }
+    //std::cout << argv[1] << "\n" << argv[2] << "\n" << argv[3] << "\n" << argv[4] << "\n";
+    blockid.assign(argv[1]);
+    prevhash.assign(argv[2]);
+    transactions.assign(argv[3]);
+    try {
+        difficulty = std::stoi(argv[4]);
+    }
+    catch(std::exception const &e) {
+        std::cout << "Invalid difficulty" << std::endl;
+        return 1;
+    }
+    /*std::cout << "Enter block ID : ";
     getline(std::cin, blockid);
     std::cout << "Enter previous block's hash : ";
     getline(std::cin, prevhash);
@@ -267,7 +282,7 @@ int main()
     getline(std::cin, transactions);
     std::cout << "Enter difficulty : ";
     std::cin >> difficulty;
-    std::cout << std::endl;
+    std::cout << std::endl;*/
 
     char *d_in_blockid = nullptr;
     cudaMalloc(&d_in_blockid, blockid.size() + 1);
