@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as axios from "axios";
 
 import { SessionContext } from "../../util/session";
 import { useNavigate } from "react-router-dom";
@@ -9,13 +10,14 @@ export const Home = () => {
     const session = React.useContext(SessionContext);
     const nav = useNavigate();
 
-    const sus = [
-        "Hey @everyone! Have a paw-ssion for feet?",
-        "I love Chick-fil-A",
-        "Wait guys... How do I do dot product and cross product again???",
-        "You are a darker shade",
-        "low d high minus high d low, square the bottom and here you go"
-    ][Math.floor(Math.random() * 5)];
+    const [sus, setSus] = React.useState("");
+    React.useEffect(() => {
+        axios.default.get('/api/quote/get').then(res => {
+            if(res.data.quote) {
+                setSus(res.data.quote);
+            }
+        }).catch(() => {});
+    }, [])
 
     return (
         <div className={"home"}>
